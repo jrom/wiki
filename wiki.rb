@@ -132,17 +132,18 @@ __END__
     #content
       = yield
     #footer
-      %a{:href => "/"} home
-      %a{:href => "/n"} new page
-      %a{:href => "/p"} list of pages
-      - if @page
-        %a{:href => "/e#{@page.url}"} edit
-        #pageinfo
-          Version:
-          = @page.version
-          - unless @page.new_record?
-            Last update:
-            = @page.updated_at.strftime("%d/%m/%Y at %H:%M")
+      #links
+        %a{:href => "/"} home
+        %a{:href => "/n"} new page
+        %a{:href => "/p"} list of pages
+        - if @page
+          %a{:href => "/e#{@page.url}"} edit
+          #pageinfo
+            Version:
+            = @page.version
+            - unless @page.new_record?
+              Last update:
+              = @page.updated_at.strftime("%d/%m/%Y at %H:%M")
 
 @@ page
 %h1

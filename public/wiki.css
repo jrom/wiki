@@ -19,7 +19,7 @@ body, textarea
 #content
 {
   background: #fff;
-  margin: 0 auto -50px;
+  margin: 0 auto -70px;
   width: 800px;
   min-height: 100%;
   height: auto !important;
@@ -93,6 +93,7 @@ form input.save:active
   margin: 0 auto;
   width: 800px;
   height: 50px;
+  margin-top: 10px;
 }
 
 #footer #pageinfo
@@ -100,6 +101,11 @@ form input.save:active
   float: right;
   color: #777;
   font-size: 0.8em;
+}
+
+#footer #links
+{
+
 }
 
 #content p
