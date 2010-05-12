@@ -62,6 +62,7 @@ configure do
 end
 
 before do
+  content_type :html, 'charset' => 'utf-8'
   @title = ""
 end
 
