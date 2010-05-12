@@ -20,9 +20,6 @@ environment = ENV["RACK_ENV"] || 'development'
 dbconfig = YAML.load(File.read('config/database.yml'))
 ActiveRecord::Base.establish_connection dbconfig[environment]
 
-Time.zone = "Madrid"
-ActiveRecord::Base.default_timezone = "Madrid"
-
 PASSWORD_PROTECTED = true
 USER = ENV["WIKI_USER"] || 'wiki'
 PASSWORD = ENV["WIKI_PWD"] || 'wiki'
