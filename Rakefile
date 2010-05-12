@@ -1,7 +1,7 @@
 # By Jordi Romero
 
 task :environment do
-  require 'config'
+  require 'wiki'
 end
 
 namespace :db do

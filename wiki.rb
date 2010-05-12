@@ -44,6 +44,11 @@ configure do
   enable :inline_templates
 end
 
+get '/p' do
+  @pages = Page.all
+  haml :pages
+end
+
 post '/p' do
   if params[:page_id] && params[:page_id].to_i > 0
     @page = Page.find(params[:page_id])
@@ -94,10 +99,12 @@ __END__
   %head
     %title
       Wiki
+    %link{:href => "/wiki.css", :rel => "stylesheet"}
   %body
-    = yield
-    #footer
-      %a{:href => "/n"} new page
+    #content
+      = yield
+      #footer
+        %a{:href => "/n"} new page
 
 @@ page
 %h2
@@ -106,14 +113,32 @@ __END__
   = md @page.body
 #footer
   %a{:href => "/e#{@page.url}"} edit
+  Last update:
+  = @page.updated_at.strftime("%d/%m/%Y at %H:%M")
+
+@@ pages
+%h2 List of pages
+%ul
+  - @pages.each do |page|
+    %li
+      %a{:href => "#{page.url}", :title => "#{page.title}"}
+        = page.title
 
 @@ form
 %h2 New page
 %form{:action => "/p", :method => "post"}
   %input{:type => "hidden", :name => "page_id", :value => "#{@page.id}"}
-  %input{:type => "text", :name => "page[title]", :value => "#{@page.title}"}
-  %input{:type => "text", :name => "page[url]", :value => "#{@page.url}"}
-  %textarea{:name => "page[body]"}
+  %label{:for => "title"} Title
+  %input{:type => "text", :name => "page[title]", :value => "#{@page.title}", :id => "title"}
+  %label{:for => "url"} URL
+  %input{:type => "text", :name => "page[url]", :value => "#{@page.url}", :id => "url"}
+  %label{:for => "body"}
+    Body
+    (
+    %a{:href => "http://daringfireball.net/projects/markdown/", :target => "blank"}> markdown
+    )
+    
+  %textarea{:name => "page[body]", :id => "body"}
     = @page.body
-  %input{:type => "submit", :value => "Save"}
+  %input{:type => "submit", :value => "Save", :class => "save"}
   %a{:href => "#{@page.id ? @page.url : "/"}"} cancel
