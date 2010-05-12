@@ -20,6 +20,10 @@ environment = ENV["RACK_ENV"] || 'development'
 dbconfig = YAML.load(File.read('config/database.yml'))
 ActiveRecord::Base.establish_connection dbconfig[environment]
 
+PASSWORD_PROTECTED = true
+USER = ENV["WIKI_USER"] || 'wiki'
+PASSWORD = ENV["WIKI_PWD"] || 'wiki'
+
 class Page < ActiveRecord::Base
 
   versioned
@@ -39,6 +43,12 @@ class Page < ActiveRecord::Base
     end
   end
 
+end
+
+if PASSWORD_PROTECTED
+  use Rack::Auth::Basic do |username, password|
+    [username, password] == [USER, PASSWORD]
+  end
 end
 
 helpers do
@@ -144,8 +154,7 @@ __END__
 %ul
   - @pages.each do |page|
     %li
-      %a{:href => "#{page.url}", :title => "#{page.title}"}
-        = page.title
+      %a{:href => "#{page.url}", :title => "#{page.title}"}= page.title
 
 @@ form
 %h1 New page
