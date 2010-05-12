@@ -13,6 +13,7 @@ require 'sinatra'
 require 'active_record'
 require 'bluecloth'
 require 'haml'
+require 'vestal_versions'
 
 environment = ENV["RACK_ENV"] || 'development'
 
@@ -21,13 +22,19 @@ ActiveRecord::Base.establish_connection dbconfig[environment]
 
 class Page < ActiveRecord::Base
 
+  versioned
+
+  before_validation :check_slash
+
   validates_presence_of :url
+  validates_length_of :url, :minimum => 1
   validates_uniqueness_of :url
-  before_save :check_slash
+  validates_exclusion_of :url, :in => ["/e", "/p", "/n"], :message => "URL {{value}} is reserved."
+  validates_presence_of :title, :body
 
   # We add the first slash if it wasn't there
   def check_slash
-    unless self.url[0..0] == "/"
+    unless url && !self.url.empty? && self.url[0..0] == "/"
       self.url = "/#{self.url}"
     end
   end
@@ -44,8 +51,13 @@ configure do
   enable :inline_templates
 end
 
+before do
+  @title = ""
+end
+
 get '/p' do
   @pages = Page.all
+  @title = "List of pages"
   haml :pages
 end
 
@@ -55,6 +67,7 @@ post '/p' do
     if @page.update_attributes(params[:page])
       redirect @page.url
     else
+      @title = "Edit page"
       haml :form
     end
   else
@@ -62,20 +75,23 @@ post '/p' do
     if @page.save
       redirect @page.url
     else
+      @title = "New page"
       haml :form
     end
   end
 end
 
 get '/n' do
-  @page = Page.new
+  @page = Page.new(params[:page])
+  @title = "New page"
   haml :form
 end
 
-get '/e*' do
-  url = params[:splat]
+get '/e/*' do
+  url = "/#{params[:splat]}"
   @page = Page.find_by_url(url)
   if @page
+    @title = "Edit page"
     haml :form
   else
     redirect '/'
@@ -83,12 +99,14 @@ get '/e*' do
 end
 
 get '*' do
-  url = params[:splat]
-  @page = Page.find_by_url(url)
+  @url = params[:splat]
+  @page = Page.find_by_url(@url)
   if @page
+    @title = @page.title
     haml :page
   else
-    haml "NOT FOUND: #{url}"
+    @title = "Not found"
+    haml :not_found
   end
 end
 
@@ -97,27 +115,32 @@ __END__
 @@ layout
 %html
   %head
-    %title
-      Wiki
+    %title= @title
     %link{:href => "/wiki.css", :rel => "stylesheet"}
   %body
     #content
       = yield
-      #footer
-        %a{:href => "/n"} new page
+    #footer
+      %a{:href => "/"} home
+      %a{:href => "/n"} new page
+      %a{:href => "/p"} list of pages
+      - if @page
+        %a{:href => "/e#{@page.url}"} edit
+        #pageinfo
+          Version:
+          = @page.version
+          - unless @page.new_record?
+            Last update:
+            = @page.updated_at.strftime("%d/%m/%Y at %H:%M")
 
 @@ page
-%h2
+%h1
   = @page.title
-%p
-  = md @page.body
-#footer
-  %a{:href => "/e#{@page.url}"} edit
-  Last update:
-  = @page.updated_at.strftime("%d/%m/%Y at %H:%M")
+~ md @page.body
+
 
 @@ pages
-%h2 List of pages
+%h1 List of pages
 %ul
   - @pages.each do |page|
     %li
@@ -125,7 +148,7 @@ __END__
         = page.title
 
 @@ form
-%h2 New page
+%h1 New page
 %form{:action => "/p", :method => "post"}
   %input{:type => "hidden", :name => "page_id", :value => "#{@page.id}"}
   %label{:for => "title"} Title
@@ -138,7 +161,12 @@ __END__
     %a{:href => "http://daringfireball.net/projects/markdown/", :target => "blank"}> markdown
     )
     
-  %textarea{:name => "page[body]", :id => "body"}
-    = @page.body
+  %textarea{:name => "page[body]", :id => "body"}= @page.body
   %input{:type => "submit", :value => "Save", :class => "save"}
-  %a{:href => "#{@page.id ? @page.url : "/"}"} cancel
+  %a{:href => "#{@page.id ? @page.url : "/"}", :class => "cancel"} cancel
+
+@@ not_found
+%h1 Not found
+%div
+  The URL #{@url} doesn't exist yet. You may want to
+  %a{:href => "/n?page[url]=#{@url}"} create it?

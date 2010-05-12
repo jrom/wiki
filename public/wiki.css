@@ -1,16 +1,35 @@
-html
-{
+* {
   margin: 0;
 }
-body
+
+a { color: #456F99; }
+a:visited { color: #2B4661; }
+a:hover { color: #649986; }
+a:active { color: #991C46; }
+html, body
+{
+  height: 100%;
+  background: #ddd;
+}
+body, textarea
 {
   font-family: Arial, sans-serif;
 }
 
 #content
 {
-  margin: 0 auto;
+  background: #fff;
+  margin: 0 auto -50px;
   width: 800px;
+  min-height: 100%;
+  height: auto !important;
+  height: 100%;
+  padding: 0 20px;
+}
+
+h1
+{
+  padding-top: 20px;
 }
 
 form
@@ -37,6 +56,13 @@ form textarea#body
   height: 50%;
 }
 
+form a.cancel
+{
+  float: right;
+  margin-right: 1em;
+  margin-top: 1em;
+  line-height: 30px;
+}
 form input.save
 {
   float: right;
@@ -60,4 +86,23 @@ form input.save:hover
 form input.save:active
 {
   background: #999;
+}
+
+#footer
+{
+  margin: 0 auto;
+  width: 800px;
+  height: 50px;
+}
+
+#footer #pageinfo
+{
+  float: right;
+  color: #777;
+  font-size: 0.8em;
+}
+
+#content p
+{
+  margin: 1em 0;
 }
