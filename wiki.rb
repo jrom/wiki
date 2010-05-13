@@ -86,7 +86,10 @@ post '/p' do
   if params[:page_id] && params[:page_id].to_i > 0
     @page = Page.find(params[:page_id])
     @page.locked_at = nil
-    if @page.update_attributes(params[:page])
+    if params[:version]
+      @page.revert_to!(params[:version].to_i)
+      redirect @page.url
+    elsif @page.update_attributes(params[:page])
       redirect @page.url
     else
       @title = "Edit page"
@@ -149,6 +152,7 @@ end
 get '*' do
   @url = params[:splat]
   @page = Page.find_by_url(@url)
+  @page.revert_to(params[:version].to_i) if params[:version]
   if @page
     @title = @page.title
     haml :page
@@ -181,6 +185,16 @@ __END__
           -else
             %a{:href => "/e#{@page.url}"} edit
           - unless @page.new_record?
+            #versioning
+              - if @page.version > 1
+                %a{:href => "#{@page.url}?version=#{@page.version-1}"} prev
+              - if params[:version]
+                %a{:href => "#{@page.url}"} latest
+                %form{:action => "/p", :method => "post"}
+                  %input{:type => "hidden", :name => "version", :value => "#{params[:version]}"}
+                  %input{:type => "hidden", :name => "page_id", :value => "#{@page.id}"}
+                  %input{:type => "submit", :value => "revert", :class => "revert", :onclick => "return confirm('This will revert the version you are seeing as the current version. Are you sure?')", :title => "This will revert the version you are seeing as the current version."}
+
             #pageinfo
               Version:
               = @page.version
@@ -189,7 +203,6 @@ __END__
 
 @@ page
 ~ md @page.body
-
 
 @@ pages
 %ul#pages

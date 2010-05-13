@@ -122,6 +122,21 @@ form input.delete:active
   font-size: 0.8em;
 }
 
+#footer #versioning
+{
+  float: right;
+  color: #777;
+  font-size: 0.8em;
+  padding: 0 10px;
+  margin: 0 10px;
+  background: #ffff99;
+}
+
+#footer #versioning form, #footer #versioning form input
+{
+  display: inline;
+}
+
 #footer #links
 {
 

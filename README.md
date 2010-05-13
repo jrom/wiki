@@ -32,4 +32,4 @@ The three config steps are optional, if you don't specify a username and passwor
 
 ## TODO
 
-  - Recover previous version of a page
+  - Localization
