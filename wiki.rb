@@ -33,9 +33,15 @@ class Page < ActiveRecord::Base
   validates_presence_of :url
   validates_length_of :url, :minimum => 1
   validates_uniqueness_of :url
-  validates_exclusion_of :url, :in => ["/e", "/p", "/n"], :message => "URL {{value}} is reserved."
+  validates_exclusion_of :url, :in => ["/e", "/p", "/n", "/r"], :message => "URL {{value}} is reserved."
   validates_presence_of :title, :body
 
+  LOCKING_PERIOD = 1.minute
+  def locked?
+    self.locked_at && self.locked_at +  LOCKING_PERIOD > Time.now
+  end
+
+  private
   # We add the first slash if it wasn't there
   def check_slash
     unless url && !self.url.empty? && self.url[0..0] == "/"
@@ -75,6 +81,7 @@ end
 post '/p' do
   if params[:page_id] && params[:page_id].to_i > 0
     @page = Page.find(params[:page_id])
+    @page.locked_at = nil
     if @page.update_attributes(params[:page])
       redirect @page.url
     else
@@ -83,11 +90,22 @@ post '/p' do
     end
   else
     @page = Page.new(params[:page])
+    @page.locked_at = nil
     if @page.save
       redirect @page.url
     else
       @title = "New page"
       haml :form
+    end
+  end
+end
+
+post '/r' do
+  url = params[:url]
+  @page = Page.find_by_url(url)
+  if @page
+    @page.skip_version do
+      @page.locked_at = Time.now
     end
   end
 end
@@ -102,8 +120,15 @@ get '/e/*' do
   url = "/#{params[:splat]}"
   @page = Page.find_by_url(url)
   if @page
-    @title = "Edit page"
-    haml :form
+    unless @page.locked?
+      @page.skip_version do
+        @page.locked_at = Time.now
+      end
+      @title = "Edit page"
+      haml :form
+    else
+      redirect @page.url
+    end
   else
     redirect '/'
   end
@@ -128,8 +153,10 @@ __END__
   %head
     %title= @title
     %link{:href => "/wiki.css", :rel => "stylesheet"}
+    %script{:src => "http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"}
   %body
     #content
+      %h1= @title
       = yield
     #footer
       #links
@@ -137,7 +164,10 @@ __END__
         %a{:href => "/n"} new page
         %a{:href => "/p"} list of pages
         - if @page
-          %a{:href => "/e#{@page.url}"} edit
+          - if @page.locked?
+            page locked
+          -else
+            %a{:href => "/e#{@page.url}"} edit
           #pageinfo
             Version:
             = @page.version
@@ -146,20 +176,16 @@ __END__
               = @page.updated_at.strftime("%d/%m/%Y at %H:%M")
 
 @@ page
-%h1
-  = @page.title
 ~ md @page.body
 
 
 @@ pages
-%h1 List of pages
 %ul
   - @pages.each do |page|
     %li
       %a{:href => "#{page.url}", :title => "#{page.title}"}= page.title
 
 @@ form
-%h1 New page
 %form{:action => "/p", :method => "post"}
   %input{:type => "hidden", :name => "page_id", :value => "#{@page.id}"}
   %label{:for => "title"} Title
@@ -175,9 +201,17 @@ __END__
   %textarea{:name => "page[body]", :id => "body"}= @page.body
   %input{:type => "submit", :value => "Save", :class => "save"}
   %a{:href => "#{@page.id ? @page.url : "/"}", :class => "cancel"} cancel
+:javascript
+  function relock()
+  {
+    $.post('/r', { url: "#{@page.url}"} )
+    setTimeout('relock()', 30000)
+  }
+  $(document).ready(function() {
+    relock()
+  })
 
 @@ not_found
-%h1 Not found
 %div
   The URL #{@url} doesn't exist yet. You may want to
   %a{:href => "/n?page[url]=#{@url}"} create it?

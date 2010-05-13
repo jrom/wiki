@@ -22,3 +22,14 @@ The three config steps are optional, if you don't specify a username and passwor
     git push heroku master
     heroku rake db:migrate
     heroku open
+
+
+## Features
+
+  - **Markdown** for content.
+  - **Locked editing**: while someone is editing a page, other sessions can't edit that page. The lock lasts minimum one minute and it updates every 30 seconds while editing. If somebody leaves one edit page open for hours, the page will be locked for hours.
+  - **Versioning** of content. Don't ever loose anything.
+
+## TODO
+
+  - Recover previous version of a page
