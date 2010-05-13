@@ -42,7 +42,7 @@ form label, form input
 }
 form input#title, form input#url
 {
-  width: 95%;
+  width: 100%;
   font-size: 1.5em;
   padding: 0.2em;
   margin-bottom: 1em;
@@ -50,7 +50,7 @@ form input#title, form input#url
 
 form textarea#body
 {
-  width: 95%;
+  width: 100%;
   font-size: 1.2em;
   padding: 0.2em;
   height: 50%;
@@ -63,19 +63,23 @@ form a.cancel
   margin-top: 1em;
   line-height: 30px;
 }
-form input.save
+
+form input.save, form input.delete
 {
-  float: right;
-  margin-right: 5%;
   margin-top: 1em;
-  width: 100px;
-  height: 40px;
   border: none;
   display: block;
-  background: #ccc;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   border-radius: 5px;
+  height: 40px;
+  padding: 0 30px;
+}
+
+form input.save
+{
+  float: right;
+  background: #ccc;
 }
 
 form input.save:hover
@@ -86,6 +90,21 @@ form input.save:hover
 form input.save:active
 {
   background: #999;
+}
+
+form input.delete
+{
+  background: #C69498;
+}
+
+form input.delete:hover
+{
+  background: #C60016;
+}
+
+form input.delete:active
+{
+  background: #91000F;
 }
 
 #footer
@@ -133,6 +152,7 @@ ul#pages
   color: #777;
   font-style: italic;
 }
+
 #pages li.page span.version
 {
   float: right;

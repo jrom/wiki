@@ -104,6 +104,14 @@ post '/p' do
   end
 end
 
+delete '/p' do
+  @page = Page.find(params[:page_id])
+  if @page
+    @page.destroy
+  end
+  redirect '/'
+end
+
 post '/r' do
   url = params[:url]
   @page = Page.find_by_url(url)
@@ -172,10 +180,10 @@ __END__
             page locked
           -else
             %a{:href => "/e#{@page.url}"} edit
-          #pageinfo
-            Version:
-            = @page.version
-            - unless @page.new_record?
+          - unless @page.new_record?
+            #pageinfo
+              Version:
+              = @page.version
               Last update:
               = @page.updated_at.strftime("%d/%m/%Y at %H:%M")
 
@@ -211,6 +219,12 @@ __END__
   %textarea{:name => "page[body]", :id => "body"}= @page.body
   %input{:type => "submit", :value => "Save", :class => "save"}
   %a{:href => "#{@page.id ? @page.url : "/"}", :class => "cancel"} cancel
+- unless @page.new_record?
+  %form{:action => "/p", :method => "post"}
+    %input{:type => "hidden", :name => "_method", :value => "delete"}
+    %input{:type => "hidden", :name => "page_id", :value => "#{@page.id}"}
+    %input{:type => "submit", :value => "Delete this page", :class => "delete", :onclick => "return confirm('Are you sure?')"}
+
 :javascript
   function relock()
   {
