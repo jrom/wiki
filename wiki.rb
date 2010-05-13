@@ -152,8 +152,8 @@ end
 get '*' do
   @url = params[:splat]
   @page = Page.find_by_url(@url)
-  @page.revert_to(params[:version].to_i) if params[:version]
   if @page
+    @page.revert_to(params[:version].to_i) if params[:version]
     @title = @page.title
     haml :page
   else
@@ -187,9 +187,9 @@ __END__
           - unless @page.new_record?
             #versioning
               - if @page.version > 1
-                %a{:href => "#{@page.url}?version=#{@page.version-1}"} prev
+                %a{:href => "#{@page.versions.last.versioned.url}?version=#{@page.version-1}"} prev
               - if params[:version]
-                %a{:href => "#{@page.url}"} latest
+                %a{:href => "#{@page.versions.last.versioned.url}"} latest
                 %form{:action => "/p", :method => "post"}
                   %input{:type => "hidden", :name => "version", :value => "#{params[:version]}"}
                   %input{:type => "hidden", :name => "page_id", :value => "#{@page.id}"}
