@@ -61,6 +61,10 @@ helpers do
   def md(s)
     BlueCloth.new(s).to_html
   end
+  def zebra(val)
+    @_zebra = true unless defined?(@_zebra)
+    (@_zebra = !@_zebra) ? val : ""
+  end
 end
 
 configure do
@@ -73,7 +77,7 @@ before do
 end
 
 get '/p' do
-  @pages = Page.all
+  @pages = Page.scoped(:order => "updated_at desc").all
   @title = "List of pages"
   haml :pages
 end
@@ -180,10 +184,16 @@ __END__
 
 
 @@ pages
-%ul
+%ul#pages
+  %li.page.head
+    Page
+    %span.version Version
+    %span.updated Last update
   - @pages.each do |page|
-    %li
+    %li.page{:class => "#{zebra("odd")}" }
       %a{:href => "#{page.url}", :title => "#{page.title}"}= page.title
+      %span.version= page.version
+      %span.updated= page.updated_at
 
 @@ form
 %form{:action => "/p", :method => "post"}

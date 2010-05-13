@@ -112,3 +112,38 @@ form input.save:active
 {
   margin: 1em 0;
 }
+
+ul#pages
+{
+  padding: 20px 0;
+}
+#pages li.page
+{
+  list-style: none;
+  padding: 5px;
+}
+
+#pages li.page.odd
+{
+  background-color: #dddddd;
+}
+
+#pages li.page.head
+{
+  color: #777;
+  font-style: italic;
+}
+#pages li.page span.version
+{
+  float: right;
+  width: 50px;
+  text-align: center;
+  font-size: 0.8em;
+}
+
+#pages li.page span.updated
+{
+  float: right;
+  width: 250px;
+  font-size: 0.8em;
+}
