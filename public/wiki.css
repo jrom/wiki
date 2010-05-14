@@ -64,7 +64,7 @@ form a.cancel
   line-height: 30px;
 }
 
-form input.save, form input.delete
+form input.save, form input.delete, form input.previewbtn
 {
   margin-top: 1em;
   border: none;
@@ -76,18 +76,18 @@ form input.save, form input.delete
   padding: 0 30px;
 }
 
-form input.save
+form input.save, form input.previewbtn
 {
   float: right;
   background: #ccc;
 }
 
-form input.save:hover
+form input.save:hover, form input.previewbtn:hover
 {
   background: #aaa;
 }
 
-form input.save:active
+form input.save:active, form input.previewbtn:active
 {
   background: #999;
 }
@@ -105,6 +105,27 @@ form input.delete:hover
 form input.delete:active
 {
   background: #91000F;
+}
+
+#preview
+{
+  display: none;
+  width: 99%;
+  height: 49%;
+  font-size: 1em;
+  padding: 0.2em;
+  border: 1px solid #333;
+  overflow: auto;
+}
+
+#editbtn
+{
+  display: none;
+}
+
+.previewbtn
+{
+  margin-right: 1em;
 }
 
 #footer

@@ -170,6 +170,7 @@ __END__
     %title= @title
     %link{:href => "/wiki.css", :rel => "stylesheet"}
     %script{:src => "http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"}
+    %script{:src => "/showdown.js"}
   %body
     #content
       %h1= @title
@@ -230,13 +231,40 @@ __END__
     )
     
   %textarea{:name => "page[body]", :id => "body"}= @page.body
+  #preview
   %input{:type => "submit", :value => "Save", :class => "save"}
+  %input{:type => "button", :value => "Preview", :class => "previewbtn", :id => "previewbtn"}
+  %input{:type => "button", :value => "Edit", :class => "previewbtn", :id => "editbtn"}
   %a{:href => "#{@page.id ? @page.url : "/"}", :class => "cancel"} cancel
 - unless @page.new_record?
   %form{:action => "/p", :method => "post"}
     %input{:type => "hidden", :name => "_method", :value => "delete"}
     %input{:type => "hidden", :name => "page_id", :value => "#{@page.id}"}
     %input{:type => "submit", :value => "Delete this page", :class => "delete", :onclick => "return confirm('Are you sure?')"}
+
+:javascript
+  function convertText()
+  {
+    var text = $("#body").val()
+    var converter = new Showdown.converter()
+    text = converter.makeHtml(text)
+    $("#preview").html(text)
+  }
+  $(document).ready(function() {
+    $("#previewbtn").live('click', function() {
+      convertText()
+      $("#body").hide()
+      $("#editbtn").show()
+      $("#previewbtn").hide()
+      $("#preview").show()
+    })
+    $("#editbtn").live('click', function() {
+      $("#preview").hide()
+      $("#editbtn").hide()
+      $("#previewbtn").show()
+      $("#body").show()
+    })
+  })
 
 :javascript
   function relock()
