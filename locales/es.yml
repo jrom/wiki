@@ -1,0 +1,22 @@
+home: inicio
+newpage: nueva página
+listofpages: lista de páginas
+pagelocked: página bloqueada
+edit: editar
+previousversion: anterior
+latestversion: última
+confirmrevert: Seguro que quieres volver a la veresión que estas viendo de esta página?
+version: Versión
+lastupdate: Última actualización
+page: Página
+title: Título
+url: URL
+body: Contenido
+save: Guardar
+preview: Vista previa
+cancel: Cancelar
+deletethispage: Eliminar esta página
+confirmdelete: Seguro?
+notfound: No encontrado
+notfoundmessage: The URL %1 doesn't exist yet. You may want to create it?
+editpage: Editar página

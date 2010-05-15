@@ -1,0 +1,22 @@
+home: home
+newpage: new page
+listofpages: list of pages
+pagelocked: page locked
+edit: edit
+previousversion: prev
+latestversion: latest
+confirmrevert: This will revert the version you are seeing as the current version. Are you sure?
+version: Version
+lastupdate: Last update
+page: Page
+title: Title
+url: URL
+body: Body
+save: Save
+preview: Preview
+cancel: Cancel
+deletethispage: Delete this page
+confirmdelete: Are you sure?
+notfound: Not found
+notfoundmessage: The URL %1 doesn't exist yet. You may want to create it?
+editpage: Edit page

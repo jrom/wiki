@@ -1,0 +1,22 @@
+home: inici
+newpage: nova pàgina
+listofpages: llista de pàgines
+pagelocked: pàgina bloquejada
+edit: editar
+previousversion: anterior
+latestversion: última
+confirmrevert: Segur que vols tornar a la versió que estàs veient d'aquesta pàgina?
+version: Versió
+lastupdate: Última actualització
+page: Pàgina
+title: Títol
+url: URL
+body: Contingut
+save: Desar
+preview: Previsualitzar
+cancel: Cancel·lar
+deletethispage: Esborrar aquesta pàgina
+confirmdelete: Segur?
+notfound: "No s'ha trobat"
+notfoundmessage: La URL %1 no existeix. La vols crear?
+editpage: Editar pàgina

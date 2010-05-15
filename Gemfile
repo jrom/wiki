@@ -1,6 +1,7 @@
 source :gemcutter
 
 gem "sinatra", "1.0"
+gem "sinatra-r18n", "0.4.5"
 gem "activerecord", "2.3.5"
 gem "bluecloth", "2.0.7"
 gem "haml"

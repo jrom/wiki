@@ -10,6 +10,7 @@ rescue LoadError
 end
 
 require 'sinatra'
+require 'sinatra/r18n'
 require 'active_record'
 require 'bluecloth'
 require 'haml'
@@ -23,6 +24,7 @@ ActiveRecord::Base.establish_connection dbconfig[environment]
 PASSWORD_PROTECTED = true
 USER = ENV["WIKI_USER"] || 'wiki'
 PASSWORD = ENV["WIKI_PWD"] || 'wiki'
+LOCALE = ENV["WIKI_LOCALE"] || 'en'
 
 class Page < ActiveRecord::Base
 
@@ -69,16 +71,18 @@ end
 
 configure do
   enable :inline_templates
+  set :translations, './locales'
 end
 
 before do
   content_type :html, 'charset' => 'utf-8'
+  session[:locale] = LOCALE
   @title = ""
 end
 
 get '/p' do
   @pages = Page.scoped(:order => "updated_at desc").all
-  @title = "List of pages"
+  @title = t.listofpages.capitalize
   haml :pages
 end
 
@@ -92,7 +96,7 @@ post '/p' do
     elsif @page.update_attributes(params[:page])
       redirect @page.url
     else
-      @title = "Edit page"
+      @title = t.editpage
       haml :form
     end
   else
@@ -101,7 +105,7 @@ post '/p' do
     if @page.save
       redirect @page.url
     else
-      @title = "New page"
+      @title = t.newpage.capitalize
       haml :form
     end
   end
@@ -127,7 +131,7 @@ end
 
 get '/n' do
   @page = Page.new(params[:page])
-  @title = "New page"
+  @title = t.newpage.capitalize
   haml :form
 end
 
@@ -139,7 +143,7 @@ get '/e/*' do
       @page.skip_version do
         @page.locked_at = Time.now
       end
-      @title = "Edit page"
+      @title = t.editpage.capitalize
       haml :form
     else
       redirect @page.url
@@ -157,7 +161,7 @@ get '*' do
     @title = @page.title
     haml :page
   else
-    @title = "Not found"
+    @title = t.notfound
     haml :not_found
   end
 end
@@ -177,30 +181,31 @@ __END__
       = yield
     #footer
       #links
-        %a{:href => "/"} home
-        %a{:href => "/n"} new page
-        %a{:href => "/p"} list of pages
+        %a{:href => "/"}= t.home
+        %a{:href => "/n"}= t.newpage
+        %a{:href => "/p"}= t.listofpages
         - if @page
           - if @page.locked?
-            page locked
+            = t.pagelocked
           -else
-            %a{:href => "/e#{@page.url}"} edit
+            %a{:href => "/e#{@page.url}"}= t.edit
           - unless @page.new_record?
             #versioning
               - if @page.version > 1
-                %a{:href => "#{@page.versions.last.versioned.url}?version=#{@page.version-1}"} prev
+                %a{:href => "#{@page.versions.last.versioned.url}?version=#{@page.version-1}"}= t.previousversion
               - if params[:version]
-                %a{:href => "#{@page.versions.last.versioned.url}"} latest
+                %a{:href => "#{@page.versions.last.versioned.url}"}= t.latestversion
                 %form{:action => "/p", :method => "post"}
                   %input{:type => "hidden", :name => "version", :value => "#{params[:version]}"}
                   %input{:type => "hidden", :name => "page_id", :value => "#{@page.id}"}
-                  %input{:type => "submit", :value => "revert", :class => "revert", :onclick => "return confirm('This will revert the version you are seeing as the current version. Are you sure?')", :title => "This will revert the version you are seeing as the current version."}
+                  %input{:type => "submit", :value => "revert", :class => "revert", :onclick => "return confirm('#{t.confirmrevert}')", :title => "#{t.confirmrevert}"}
 
             #pageinfo
-              Version:
+              #{t.version}:
               = @page.version
-              Last update:
-              = @page.updated_at.strftime("%d/%m/%Y at %H:%M")
+              #{t.lastupdate}:
+              = l @page.updated_at, :human
+              /= @page.updated_at.strftime("%d/%m/%Y at %H:%M")
 
 @@ page
 ~ md @page.body
@@ -208,9 +213,9 @@ __END__
 @@ pages
 %ul#pages
   %li.page.head
-    Page
-    %span.version Version
-    %span.updated Last update
+    = t.page
+    %span.version= t.version
+    %span.updated= t.lastupdate
   - @pages.each do |page|
     %li.page{:class => "#{zebra("odd")}" }
       %a{:href => "#{page.url}", :title => "#{page.title}"}= page.title
@@ -220,27 +225,27 @@ __END__
 @@ form
 %form{:action => "/p", :method => "post"}
   %input{:type => "hidden", :name => "page_id", :value => "#{@page.id}"}
-  %label{:for => "title"} Title
+  %label{:for => "title"}= t.title
   %input{:type => "text", :name => "page[title]", :value => "#{@page.title}", :id => "title"}
-  %label{:for => "url"} URL
+  %label{:for => "url"}= t.url
   %input{:type => "text", :name => "page[url]", :value => "#{@page.url}", :id => "url"}
   %label{:for => "body"}
-    Body
+    = t.body
     (
     %a{:href => "http://daringfireball.net/projects/markdown/", :target => "blank"}> markdown
     )
     
   %textarea{:name => "page[body]", :id => "body"}= @page.body
   #preview
-  %input{:type => "submit", :value => "Save", :class => "save"}
-  %input{:type => "button", :value => "Preview", :class => "previewbtn", :id => "previewbtn"}
-  %input{:type => "button", :value => "Edit", :class => "previewbtn", :id => "editbtn"}
-  %a{:href => "#{@page.id ? @page.url : "/"}", :class => "cancel"} cancel
+  %input{:type => "submit", :value => "#{t.save}", :class => "save"}
+  %input{:type => "button", :value => "#{t.preview}", :class => "previewbtn", :id => "previewbtn"}
+  %input{:type => "button", :value => "#{t.edit.capitalize}", :class => "previewbtn", :id => "editbtn"}
+  %a{:href => "#{@page.id ? @page.url : "/"}", :class => "cancel"}= t.cancel
 - unless @page.new_record?
   %form{:action => "/p", :method => "post"}
     %input{:type => "hidden", :name => "_method", :value => "delete"}
     %input{:type => "hidden", :name => "page_id", :value => "#{@page.id}"}
-    %input{:type => "submit", :value => "Delete this page", :class => "delete", :onclick => "return confirm('Are you sure?')"}
+    %input{:type => "submit", :value => "#{t.deletethispage}", :class => "delete", :onclick => "return confirm('#{t.confirmdelete}')"}
 
 :javascript
   function convertText()
@@ -278,5 +283,5 @@ __END__
 
 @@ not_found
 %div
-  The URL #{@url} doesn't exist yet. You may want to
-  %a{:href => "/n?page[url]=#{@url}"} create it?
+  = t.notfoundmessage(@url)
+  %a{:href => "/n?page[url]=#{@url}"}= t.newpage
