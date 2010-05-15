@@ -168,6 +168,19 @@ form input.delete:active
   margin: 1em 0;
 }
 
+#content hr
+{
+  margin: 20px 10px;
+  border: 0;
+  height: 1px;
+  background-color: #333;
+}
+
+#content h1, h2, h3, h4, h5
+{
+  margin-bottom: 0.5em;
+}
+
 ul#pages
 {
   padding: 20px 0;
