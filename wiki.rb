@@ -177,8 +177,9 @@ __END__
     %script{:src => "/showdown.js"}
   %body
     #content
-      %h1= @title
-      = yield
+      .inner
+        %h1= @title
+        = yield
     #footer
       #links
         %a{:href => "/"}= t.home
