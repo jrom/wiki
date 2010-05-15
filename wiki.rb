@@ -191,14 +191,14 @@ __END__
             %a{:href => "/e#{@page.url}"}= t.edit
           - unless @page.new_record?
             #versioning
-              - if @page.version > 1
-                %a{:href => "#{@page.versions.last.versioned.url}?version=#{@page.version-1}"}= t.previousversion
               - if params[:version]
-                %a{:href => "#{@page.versions.last.versioned.url}"}= t.latestversion
                 %form{:action => "/p", :method => "post"}
                   %input{:type => "hidden", :name => "version", :value => "#{params[:version]}"}
                   %input{:type => "hidden", :name => "page_id", :value => "#{@page.id}"}
                   %input{:type => "submit", :value => "revert", :class => "revert", :onclick => "return confirm('#{t.confirmrevert}')", :title => "#{t.confirmrevert}"}
+                %a{:href => "#{@page.versions.last.versioned.url}"}= t.latestversion
+              - if @page.version > 1
+                %a{:href => "#{@page.versions.last.versioned.url}?version=#{@page.version-1}"}= t.previousversion
 
             #pageinfo
               #{t.version}:
