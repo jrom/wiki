@@ -20,3 +20,4 @@ confirmdelete: Seguro?
 notfound: No encontrado
 notfoundmessage: The URL %1 doesn't exist yet. You may want to create it?
 editpage: Editar página
+revert: revertir

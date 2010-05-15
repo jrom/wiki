@@ -195,7 +195,7 @@ __END__
                 %form{:action => "/p", :method => "post"}
                   %input{:type => "hidden", :name => "version", :value => "#{params[:version]}"}
                   %input{:type => "hidden", :name => "page_id", :value => "#{@page.id}"}
-                  %input{:type => "submit", :value => "revert", :class => "revert", :onclick => "return confirm('#{t.confirmrevert}')", :title => "#{t.confirmrevert}"}
+                  %input{:type => "submit", :value => "#{t.revert}", :class => "revert", :onclick => "return confirm('#{t.confirmrevert}')", :title => "#{t.confirmrevert}"}
                 %a{:href => "#{@page.versions.last.versioned.url}"}= t.latestversion
               - if @page.version > 1
                 %a{:href => "#{@page.versions.last.versioned.url}?version=#{@page.version-1}"}= t.previousversion

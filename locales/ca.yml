@@ -20,3 +20,4 @@ confirmdelete: Segur?
 notfound: "No s'ha trobat"
 notfoundmessage: La URL %1 no existeix. La vols crear?
 editpage: Editar pàgina
+revert: revertir

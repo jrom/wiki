@@ -20,3 +20,4 @@ confirmdelete: Are you sure?
 notfound: Not found
 notfoundmessage: The URL %1 doesn't exist yet. You may want to create it?
 editpage: Edit page
+revert: revert
