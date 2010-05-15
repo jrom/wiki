@@ -1,7 +1,7 @@
 # By Jordi Romero
 
 task :environment do
-  require 'wiki'
+  require 'lib/init'
 end
 
 namespace :db do

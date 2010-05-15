@@ -1,0 +1,10 @@
+%ul#pages
+  %li.page.head
+    = t.page
+    %span.version= t.version
+    %span.updated= t.lastupdate
+  - @pages.each do |page|
+    %li.page{:class => "#{zebra("odd")}" }
+      %a{:href => "#{page.url}", :title => "#{page.title}"}= page.title
+      %span.version= page.version
+      %span.updated= page.updated_at

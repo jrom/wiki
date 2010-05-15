@@ -1,0 +1,57 @@
+%form{:action => "/p", :method => "post"}
+  %input{:type => "hidden", :name => "page_id", :value => "#{@page.id}"}
+  %label{:for => "title"}= t.title
+  %input{:type => "text", :name => "page[title]", :value => "#{@page.title}", :id => "title"}
+  %label{:for => "url"}= t.url
+  %input{:type => "text", :name => "page[url]", :value => "#{@page.url}", :id => "url"}
+  %label{:for => "body"}
+    = t.body
+    (
+    %a{:href => "http://daringfireball.net/projects/markdown/", :target => "blank"}> markdown
+    )
+    
+  %textarea{:name => "page[body]", :id => "body"}= @page.body
+  #preview
+  %input{:type => "submit", :value => "#{t.save}", :class => "save"}
+  %input{:type => "button", :value => "#{t.preview}", :class => "previewbtn", :id => "previewbtn"}
+  %input{:type => "button", :value => "#{t.edit.capitalize}", :class => "previewbtn", :id => "editbtn"}
+  %a{:href => "#{@page.id ? @page.url : "/"}", :class => "cancel"}= t.cancel
+- unless @page.new_record?
+  %form{:action => "/p", :method => "post"}
+    %input{:type => "hidden", :name => "_method", :value => "delete"}
+    %input{:type => "hidden", :name => "page_id", :value => "#{@page.id}"}
+    %input{:type => "submit", :value => "#{t.deletethispage}", :class => "delete", :onclick => "return confirm('#{t.confirmdelete}')"}
+
+:javascript
+  function convertText()
+  {
+    var text = $("#body").val()
+    var converter = new Showdown.converter()
+    text = converter.makeHtml(text)
+    $("#preview").html(text)
+  }
+  $(document).ready(function() {
+    $("#previewbtn").live('click', function() {
+      convertText()
+      $("#body").hide()
+      $("#editbtn").show()
+      $("#previewbtn").hide()
+      $("#preview").show()
+    })
+    $("#editbtn").live('click', function() {
+      $("#preview").hide()
+      $("#editbtn").hide()
+      $("#previewbtn").show()
+      $("#body").show()
+    })
+  })
+
+:javascript
+  function relock()
+  {
+    $.post('/r', { url: "#{@page.url}"} )
+    setTimeout('relock()', 30000)
+  }
+  $(document).ready(function() {
+    relock()
+  })
